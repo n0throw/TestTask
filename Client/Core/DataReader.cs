@@ -6,19 +6,30 @@ internal class DataReaderTXT : IDataReader
 
     public DataReaderTXT(string pathDir) => PathDir = pathDir;
 
-    public List<(string fileName, string fileContent)> GetData(string ex)
+    public List<(string fileName, string fileContent)>? GetData(string ex)
     {
-        List<string> files = Directory.GetFiles(PathDir, "*", SearchOption.AllDirectories).ToList();
-        List<(string fileName, string fileContent)> data = new(files.Count);
-
-        files.ForEach(file =>
+        List<string> files;
+        List<(string fileName, string fileContent)>? data = null;
+        try
         {
-            if (Path.GetExtension(file) == ex)
-                data.Add((Path.GetFileNameWithoutExtension(file), Reader(Path.GetFullPath(file))));
-        });
+            files = Directory.GetFiles(PathDir, "*", SearchOption.AllDirectories).ToList();
+            data = new(files.Count);
 
-        if (data.Count == 0)
-            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tThere is no data to send to the server");
+            files.ForEach(file =>
+            {
+                if (Path.GetExtension(file) == ex)
+                    data.Add((Path.GetFileNameWithoutExtension(file), Reader(Path.GetFullPath(file))));
+            });
+
+            if (data.Count == 0)
+                throw new Exception("There is no valid data to send to the server");
+
+            return data;
+        }
+        catch (Exception except)
+        {
+            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\t{except.Message}");
+        }
 
         return data;
     }

@@ -15,22 +15,34 @@ internal class Client
     {
         this.ip = ip;
         this.port = port;
-        dataReader = new DataReaderTXT(Assembly.GetExecutingAssembly().Location.Replace("Client.dll", "") + "Data");
+        dataReader = new DataReaderTXT(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Data");
     }
 
     internal void Start()
     {
         Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tThe client is running");
-        dataReader.GetData(".txt").ForEach(data =>
-        {
-            RequestSender requestSender = new(ip, port)
-            {
-                Message = data.fileContent,
-                FileName = data.fileName
-            };
+        List<(string fileName, string fileContent)>? data = dataReader.GetData(".txt");
 
-            Thread clientThread = new(new ThreadStart(requestSender.Processing));
-            clientThread.Start();
-        });
+        try
+        {
+            if (data != null)
+            {
+                data.ForEach(item =>
+                {
+                    RequestSender requestSender = new(ip, port)
+                    {
+                        Message = item.fileContent,
+                        FileName = item.fileName
+                    };
+
+                    Thread clientThread = new(new ThreadStart(requestSender.Processing));
+                    clientThread.Start();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\t{ex.Message}");
+        }
     }
 }

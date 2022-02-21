@@ -33,9 +33,9 @@ public class Server
             while (true)
                 requestQueue.Add(TCPserver.AcceptTcpClient().GetStream());
         }
-        catch (SocketException e)
+        catch (Exception excpet)
         {
-            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tSocketException: {0}", e);
+            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tSocketException: {excpet.Message}");
         }
         finally
         {

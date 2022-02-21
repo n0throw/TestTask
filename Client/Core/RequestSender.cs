@@ -10,22 +10,17 @@ namespace TestTask.Client.Core;
 internal class RequestSender
 {
     private readonly NetworkStream stream;
-    private string message = string.Empty;
-    private string fileName = string.Empty;
+    private readonly TcpClient tcpClient;
 
-    internal string Message
+    internal string Message { get; set; }
+
+    internal string FileName { get; set; }
+
+    internal RequestSender(string ip, int port)
     {
-        get => message;
-        set => message = value;
+        tcpClient = new TcpClient(ip, port);
+        stream = tcpClient.GetStream();
     }
-
-    internal string FileName
-    {
-        get => fileName;
-        set => fileName = value;
-    }
-
-    internal RequestSender(string ip, int port) => stream = new TcpClient(ip, port).GetStream();
 
     /// <summary>
     /// Sends a message and receives a response
@@ -33,12 +28,14 @@ internal class RequestSender
     internal void Processing()
     {
         SendMessage();
-        Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tServer response to the file '{fileName}':\t{GetMessage()}");
+        Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tServer response to the file '{FileName}':\t{GetMessage()}");
+        stream.Close();
+        tcpClient.Close();
     }
 
     private void SendMessage()
     {
-        byte[] data = Encoding.Unicode.GetBytes(message);
+        byte[] data = Encoding.Unicode.GetBytes(Message);
 
         stream.Write(data, 0, data.Length);
     }

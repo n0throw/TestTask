@@ -72,6 +72,7 @@ internal class RequestQueue
     {
         byte[] buffer = Encoding.Unicode.GetBytes(message);
         stream.Write(buffer, 0, buffer.Length);
+        stream.Close();
         Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\t{message}");
     }
 }

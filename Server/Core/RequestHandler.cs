@@ -35,6 +35,7 @@ internal class RequestHandler
         // Sending a response to a request
         buffer = Encoding.Unicode.GetBytes(IsPalindrome(builder.ToString()));
         stream.Write(buffer, 0, buffer.Length);
+        stream.Close();
     }
 
     /// <summary>
