@@ -10,12 +10,19 @@ namespace TestTask.Client.Core;
 internal class RequestSender
 {
     private readonly NetworkStream stream;
-    private string message;
+    private string message = string.Empty;
+    private string fileName = string.Empty;
 
     internal string Message
     {
         get => message;
         set => message = value;
+    }
+
+    internal string FileName
+    {
+        get => fileName;
+        set => fileName = value;
     }
 
     internal RequestSender(string ip, int port) => stream = new TcpClient(ip, port).GetStream();
@@ -25,22 +32,32 @@ internal class RequestSender
     /// </summary>
     internal void Processing()
     {
-        string sendMessage = string.Empty;
+        SendMessage();
+        Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tServer response to the file '{fileName}':\t{GetMessage()}");
+    }
+
+    private void SendMessage()
+    {
         byte[] data = Encoding.Unicode.GetBytes(message);
-        StringBuilder builder = new();
 
         stream.Write(data, 0, data.Length);
+    }
 
-        data = new byte[256];
+    private string GetMessage()
+    {
+        string getMessage;
+        StringBuilder builder = new();
+
+        byte[] data = new byte[256];
 
         do
         {
             while (stream.DataAvailable)
                 builder.Append(Encoding.Unicode.GetString(data, 0, stream.Read(data, 0, data.Length)));
 
-            sendMessage = builder.ToString();
-        } while (sendMessage == string.Empty);
+            getMessage = builder.ToString();
+        } while (getMessage == string.Empty);
 
-        Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]\tServer Answer:\t{sendMessage}");
+        return getMessage;
     }
 }

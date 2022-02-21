@@ -21,7 +21,7 @@ internal class RequestHandler
     internal void Processing()
     {
         // To process the request for at least one second
-        Thread.Sleep(3000);
+        Thread.Sleep(1000);
 
         StringBuilder builder = new();
         byte[] buffer = new byte[256];

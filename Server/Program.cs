@@ -51,7 +51,7 @@ public class Program
             }
         }
 
-        server = new Core.Server(threads ?? 11, port ?? 80, ip ?? "127.0.0.1"); 
+        server = new Core.Server(threads ?? 3, port ?? 80, ip ?? "127.0.0.1"); 
 
         server.Start();
         Console.ReadKey();
